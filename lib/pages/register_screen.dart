@@ -1,12 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import '../commons/color_common.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:glassmorphism/glassmorphism.dart';
+import '../controllers/authentication.dart';
+import '../widgets/buttonInline.dart';
+import '../widgets/iconMedia.dart';
+import '../widgets/inputTextform.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -16,334 +20,224 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+
+  final Authentication _authenticationController = Get.put(Authentication());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
-            Container(
-              margin: const EdgeInsets.all(20),
-              width: 35,
-              height: 35,
-              decoration: BoxDecoration(
-                  color: ColorApp().color_white,
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  border: Border.all(
-                    color: ColorApp().color_black, // Border color
-                    width: 1.0, // Border width
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withAlpha(25),
-                      spreadRadius: 0,
-                      blurRadius: 4,
-                      offset: Offset(0, 5),
-                    )
-                  ]),
-              child: Center(
-                child: IconButton(
-                    icon: FaIcon(
-                      FontAwesomeIcons.chevronLeft,
-                      color: ColorApp().color_green,
-                      size: 20,
-                    ),
-                    onPressed: () {
-                      // Navigator.pop(context);
-                    }),
-              ),
-            ),
-            Container(
-                margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-                child: Text(
-                  "Hello! Register to get \nstarted",
-                  style: GoogleFonts.poppins(
-                      color: ColorApp().color_black,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w600),
-                )),
-            SizedBox(height: 10.0),
-            Center(
-              child: Container(
-                width: 350,
-                height: 60,
-                padding: EdgeInsets.symmetric(horizontal: 7.0, vertical: 4),
+        child: Form(
+          key: _formkey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              Container(
+                margin: const EdgeInsets.all(20),
+                width: 35,
+                height: 35,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: HexColor("#E7E3E3"), // Border color
-                    width: 0.5, // Border width
-                  ),
-                  color: ColorApp().color_grey_light,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withAlpha(20),
-                      spreadRadius: 1,
-                      blurRadius: 10,
-                      offset: Offset(0, 3), // changes position of shadow
+                    color: ColorApp().color_white,
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(
+                      color: ColorApp().color_black, // Border color
+                      width: 1.0, // Border width
                     ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      icon: FaIcon(
-                        FontAwesomeIcons.user,
-                        color: ColorApp().color_grey,
-                        size: 20,
-                      ),
-                      border: InputBorder.none,
-                      hintText: 'User name',
-                      hintStyle: GoogleFonts.poppins(
-                        color: ColorApp().color_grey,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 30.0),
-            Center(
-              child: Container(
-                width: 350,
-                height: 60,
-                padding: EdgeInsets.symmetric(horizontal: 7.0, vertical: 4),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: HexColor("#E7E3E3"), // Border color
-                    width: 0.5, // Border width
-                  ),
-                  color: ColorApp().color_grey_light,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withAlpha(20),
-                      spreadRadius: 1,
-                      blurRadius: 10,
-                      offset: Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      icon: FaIcon(
-                        FontAwesomeIcons.envelope,
-                        color: ColorApp().color_grey,
-                        size: 20,
-                      ),
-                      border: InputBorder.none,
-                      hintText: 'Email Address',
-                      hintStyle: GoogleFonts.poppins(
-                        color: ColorApp().color_grey,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 30),
-            Center(
-              child: Container(
-                width: 350,
-                height: 60,
-                padding: EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-                decoration: BoxDecoration(
-                    border: Border.all(color: HexColor("#E7E3E3"), width: 0.5),
-                    borderRadius: BorderRadius.circular(10),
-                    color: ColorApp().color_grey_light,
                     boxShadow: [
                       BoxShadow(
-                          color: ColorApp().color_black.withAlpha(20),
-                          spreadRadius: 1,
-                          blurRadius: 10,
-                          offset: Offset(0, 3))
+                        color: Colors.black.withAlpha(25),
+                        spreadRadius: 0,
+                        blurRadius: 4,
+                        offset: const Offset(0, 5),
+                      )
                     ]),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: TextFormField(
-                    decoration: InputDecoration(
+                child: Center(
+                  child: IconButton(
                       icon: FaIcon(
-                        FontAwesomeIcons.lock,
-                        color: ColorApp().color_grey,
+                        FontAwesomeIcons.chevronLeft,
+                        color: ColorApp().color_green,
                         size: 20,
                       ),
-                      border: InputBorder.none,
-                      hintText: 'Password',
-                      hintStyle: GoogleFonts.poppins(
-                        color: ColorApp().color_grey,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
                 ),
               ),
-            ),
-            SizedBox(height: 10),
-            Stack(
-              children: [
-                Container(
-                  height: 350,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: <Color>[
-                        HexColor("#FFFFFF").withAlpha(10),
-                        HexColor("#AAE89A"),
-                        HexColor("#74FF52"),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 15,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 220),
-                    child: Text(
-                      "Forgot a password",
-                      style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: ColorApp().color_green),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 55,
-                  left: 25,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: ColorApp().color_green),
-                    child: SizedBox(
-                      height: 60,
-                      width: 320,
-                      child: Center(
-                        child: Text(
-                          "Login",
-                          style: GoogleFonts.poppins(
-                            color: ColorApp().color_white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 150,
-                  left: 32,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                          height: 0.5, width: 90, color: ColorApp().color_grey),
-                      const SizedBox(width: 20),
-                      Text("Or login with",
-                          style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 18,
-                              color: ColorApp().color_black)),
-                      const SizedBox(width: 20),
-                      Container(
-                          height: 0.5, width: 90, color: ColorApp().color_grey),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  top: 200,
-                  left: 30,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Image(
-                              image: AssetImage("assets/icons/facebook_ic.png"),
-                              width: 26,
-                              height: 26),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Container(
-                        width: 100,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Image(
-                              image: AssetImage("assets/icons/apple_ic.png"),
-                              width: 26,
-                              height: 26),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Container(
-                        width: 100,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Image(
-                              image: AssetImage("assets/icons/google_ic.png"),
-                              width: 26,
-                              height: 26),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  top: 295,
-                  left: 50,
-                  child: RichText(
-                    text: TextSpan(
-                      style: GoogleFonts.poppins(
+              Container(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                  child: Text(
+                    "Hello! Register to get \nstarted",
+                    style: GoogleFonts.poppins(
                         color: ColorApp().color_black,
-                      ), // Default text style
-                      children: const <TextSpan>[
-                        TextSpan(
-                          text: 'Don\'t have an account? ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                          ),
-                        ),
-                        TextSpan(
-                          text: 'Register now',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        fontSize: 25,
+                        fontWeight: FontWeight.w600),
+                  )),
+              const SizedBox(height: 10.0),
+              InputTextform(
+                controller: _nameController,
+                text: "User name",
+                icon: FaIcon(
+                  FontAwesomeIcons.user,
+                  color: ColorApp().color_grey,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              InputTextform(
+                controller: _emailController,
+                text: "Email address",
+                icon: FaIcon(
+                  FontAwesomeIcons.envelope,
+                  color: ColorApp().color_grey,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(height: 20),
+              InputTextform(
+                controller: _passwordController,
+                text: "Password",
+                icon: FaIcon(
+                  FontAwesomeIcons.lock,
+                  color: ColorApp().color_grey,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(height: 20),
+              InputTextform(
+                controller: _phoneController,
+                text: "Phone",
+                icon: FaIcon(
+                  FontAwesomeIcons.phone,
+                  color: ColorApp().color_grey,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Stack(
+                children: [
+                  Container(
+                    height: 270,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: <Color>[
+                          HexColor("#FFFFFF").withAlpha(10),
+                          HexColor("#AAE89A"),
+                          HexColor("#8BED73"),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Obx(() {
+                    return _authenticationController.isLoading.value
+                        ? Positioned(
+                            top: 30,
+                            left: 25,
+                            child: ButtonInline(
+                                size: 320, text: "Register", onPress: () {}))
+                        : Positioned(
+                            top: 30,
+                            left: 25,
+                            child: ButtonInline(
+                              size: 320,
+                              text: "Register",
+                              onPress: () async {
+                                if (_formkey.currentState!.validate()) {
+                                  await _authenticationController.registerUser(
+                                    name: _nameController.text.trim(),
+                                    email: _emailController.text.trim(),
+                                    password: _passwordController.text.trim(),
+                                    phone: _phoneController.text.trim(),
+                                  );
+                                } else {
+                                  print("unsuccess");
+                                }
+                              },
+                            ));
+                  }),
+                  Positioned(
+                    top: 105,
+                    left: 32,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                            height: 0.5,
+                            width: 80,
+                            color: ColorApp().color_grey),
+                        const SizedBox(width: 20),
+                        Text("Or Register with",
+                            style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 18,
+                                color: ColorApp().color_black)),
+                        const SizedBox(width: 20),
+                        Container(
+                            height: 0.5,
+                            width: 80,
+                            color: ColorApp().color_grey),
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  Positioned(
+                    top: 150,
+                    left: 30,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const [
+                        IconMedia(image: "assets/icons/facebook_ic.png"),
+                        SizedBox(width: 20),
+                        IconMedia(image: "assets/icons/apple_ic.png"),
+                        SizedBox(width: 20),
+                        IconMedia(image: "assets/icons/google_ic.png"),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 230,
+                    left: 60,
+                    child: RichText(
+                      text: TextSpan(
+                        style: GoogleFonts.poppins(
+                          color: ColorApp().color_black,
+                        ), // Default text style
+                        children: const <TextSpan>[
+                          TextSpan(
+                            text: 'You have an account? ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'Login now',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
+
 }

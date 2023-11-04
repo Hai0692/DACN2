@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_job_hiring/pages/login_screen.dart';
+import 'package:flutter_job_hiring/pages/register_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 import '../commons/color_common.dart';
+import '../widgets/buttonOutline.dart';
+import '../widgets/buttonInline.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -74,57 +78,34 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             const SizedBox(height: 15),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorApp().color_green,
-              ),
-              child: SizedBox(
-                height: 60,
-                width: 250,
-                child: Center(
-                  child: Text(
-                    "Login",
-                    style: GoogleFonts.poppins(
-                      color: ColorApp().color_white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
+            ButtonInline(
+              text: "Login",
+              onPress: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const LoginPage()));
+              },
+              size: 250,
             ),
             const SizedBox(height: 15),
-            OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(
-                  color: ColorApp().color_green,
-                  width: 1.5,
-                ),
-              ),
-              child: SizedBox(
-                height: 60,
-                width: 250,
-                child: Center(
-                  child: Text(
-                    "Outline Button",
-                    style: GoogleFonts.poppins(
-                      color: ColorApp().color_green,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
+            ButtonOutline(
+              text: "Register",
+              onPress: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const RegisterPage()));
+              },
             ),
-            const SizedBox(height: 50),
-            Text(
-              "Continue as a guest",
-              style: GoogleFonts.poppins(
-                color: ColorApp().color_black,
-                fontWeight: FontWeight.w400,
-                fontSize: 18,
+            const SizedBox(height: 40),
+            GestureDetector(
+              onTap: () {
+                
+              },
+              child: Text(
+                "Continue as a guest",
+                style: GoogleFonts.poppins(
+                  color: ColorApp().color_black,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 18,
+                ),
               ),
             ),
           ],
