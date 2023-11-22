@@ -14,9 +14,18 @@ class detailJob extends StatelessWidget {
   final String location;
   final String salary;
   final String avatar;
-   final VoidCallback onPress;
+  final VoidCallback onPress;
   const detailJob({
-    super.key, required this.position, required this.company, required this.level, required this.skill, required this.type, required this.location, required this.salary, required this.avatar, required this.onPress,
+    super.key,
+    required this.position,
+    required this.company,
+    required this.level,
+    required this.skill,
+    required this.type,
+    required this.location,
+    required this.salary,
+    required this.avatar,
+    required this.onPress,
   });
 
   @override
@@ -24,6 +33,7 @@ class detailJob extends StatelessWidget {
     return GestureDetector(
       onTap: onPress,
       child: Container(
+        width: double.maxFinite,
         //  height: 170,
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
@@ -58,26 +68,32 @@ class detailJob extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Image.network(
-                          fit: BoxFit.contain, width: 50, height: 50, avatar),
-                      const SizedBox(width: 20),
-                      Column(
+                    Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                           position,
-                            style: GoogleFonts.poppins(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                          Image.network(
+                            avatar,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.contain,
                           ),
-                          Text(
-                           company,
-                            style: GoogleFonts.poppins(
-                                fontSize: 16, fontWeight: FontWeight.w500),
+                          const SizedBox(width: 20),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                position,
+                                style: GoogleFonts.poppins(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                company,
+                                style: GoogleFonts.poppins(
+                                    fontSize: 16, fontWeight: FontWeight.w500),
+                              )
+                            ],
                           )
-                        ],
-                      )
-                    ]),
+                        ]),
                     const SizedBox(height: 5),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,10 +107,10 @@ class detailJob extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15),
                             color: Colors.white,
                           ),
-                          child:  Center(
+                          child: Center(
                             child: Text(
                               skill,
-                              style: TextStyle(fontSize: 13),
+                              style: const TextStyle(fontSize: 13),
                             ),
                           ),
                         ),
@@ -135,7 +151,8 @@ class detailJob extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_job_hiring/pages/HomePage_Screen.dart';
 import 'package:flutter_job_hiring/pages/login_screen.dart';
 import 'package:flutter_job_hiring/pages/register_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../commons/color_common.dart';
 import '../widgets/buttonOutline.dart';
@@ -16,6 +18,31 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+   @override
+  void initState() {
+    super.initState();
+    _checkIfLoggedIn();
+  }
+
+  _checkIfLoggedIn() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    if (isLoggedIn) {
+      // Nếu người dùng đã đăng nhập, chuyển hướng sang trang Home
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      // Nếu người dùng chưa đăng nhập, hiển thị trang đăng nhập
+      // (Bạn có thể thay thế bằng trang đăng nhập của bạn)
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SplashScreen()),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,7 +108,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ButtonInline(
               text: "Login",
               onPress: () {
-                  Navigator.of(context).push(
+                Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const LoginPage()));
               },
               size: 250,
@@ -90,21 +117,29 @@ class _SplashScreenState extends State<SplashScreen> {
             ButtonOutline(
               text: "Register",
               onPress: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const RegisterPage()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const RegisterPage()));
               },
             ),
             const SizedBox(height: 40),
             GestureDetector(
-              onTap: () {
-                
-              },
-              child: Text(
-                "Continue as a guest",
-                style: GoogleFonts.poppins(
-                  color: ColorApp().color_black,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 18,
+              onTap: () {},
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomePage(),
+                    ),
+                  );
+                },
+                child: Text(
+                  "Continue as a guest",
+                  style: GoogleFonts.poppins(
+                    color: ColorApp().color_black,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 18,
+                  ),
                 ),
               ),
             ),

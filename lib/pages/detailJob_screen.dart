@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_job_hiring/widgets/buttonInline.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,6 +13,7 @@ import '../widgets/background.dart';
 import '../widgets/buttonBack.dart';
 import '../widgets/card_jobdetails.dart';
 import '../widgets/customeBottom.dart';
+import 'Application_screen.dart';
 
 class DetailJob extends StatefulWidget {
   final data;
@@ -34,7 +37,10 @@ class _DetailJobState extends State<DetailJob> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
-                  const Button_Back(),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20),
+                    child: Button_Back(),
+                  ),
                   Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
@@ -47,9 +53,9 @@ class _DetailJobState extends State<DetailJob> {
 //
                   detailJob(
                     onPress: () {},
-                    avatar: widget.data["business"]["avatar"],
-                    company: widget.data["business"]["name"],
-                    position: widget.data["position"],
+                    avatar: widget.data["business"]["avatar"].toString(),
+                    company: widget.data["business"]["name"].toString(),
+                    position: widget.data["position"].toString(),
                     level: widget.data["level"] is List
                         ? widget.data["level"].join(", ")
                         : widget.data["level"].toString(),
@@ -59,8 +65,8 @@ class _DetailJobState extends State<DetailJob> {
                     type: widget.data["type"] is List
                         ? widget.data["type"].join(", ")
                         : widget.data["type"].toString(),
-                    salary: widget.data["salary"],
-                    location: widget.data["business"]["location"],
+                    salary: widget.data["salary"].toString(),
+                    location: widget.data["business"]["location"].toString(),
                   ),
 
                   Container(
@@ -206,7 +212,21 @@ class _DetailJobState extends State<DetailJob> {
                   const SizedBox(height: 10),
                   Center(
                       child: ButtonInline(
-                          text: "Apply now", onPress: () {}, size: 320)),
+                          text: "Apply now",
+                          onPress: () async {
+                            var businessDetailResponse = await _jobController
+                                .jobDetails(widget.data["id"]);
+                            var businessDetails =
+                                jsonDecode(businessDetailResponse);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ApplicationPage(data: businessDetails),
+                              ),
+                            );
+                          },
+                          size: 320)),
                   const SizedBox(height: 20),
                 ],
               ),

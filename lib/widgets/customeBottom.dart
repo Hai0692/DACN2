@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../commons/color_common.dart';
 import '../pages/HomePage_Screen.dart';
+import '../pages/profile_screen.dart';
 
 class Custome_Bottom extends StatelessWidget {
   const Custome_Bottom({
@@ -56,7 +57,12 @@ class Custome_Bottom extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const profileScreen()));
+            },
             icon: FaIcon(
               FontAwesomeIcons.solidUser,
               color: ColorApp().color_white,
