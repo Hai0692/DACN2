@@ -14,6 +14,7 @@ class BusinessController extends GetxController {
       var business = await http.get(Uri.parse('${url}business'),
           headers: {'Accept': 'application/json'});
       if (business.statusCode == 200 && business.body != '') {
+        var result = jsonDecode(business.body);
         return business.body;
       }
     } catch (error) {
@@ -27,11 +28,34 @@ class BusinessController extends GetxController {
           headers: {'Accept': 'application/json'});
       if (businessDetails.statusCode == 200 && businessDetails.body != '') {
         var result = jsonDecode(businessDetails.body);
-        print(" success: $result");
         return businessDetails.body;
       }
     } catch (error) {
       return error;
     }
+  }
+
+  static Future<List<Business>> getBusinessTest() async {
+    try {
+      var business = await http.get(Uri.parse('${url}business'),
+          headers: {'Accept': 'application/json'});
+
+      if (business.statusCode == 200) {
+        String jsonsDataString = business.body.toString();
+        print(jsonsDataString);
+
+        List<dynamic> result = json.decode(business.body);
+        List<Business> data =
+            result.map((json) => Business.fromJson(json)).toList();
+
+        return data;
+      } else {
+        print('Failed to load data. Status Code: ${business.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+
+    return [];
   }
 }

@@ -23,12 +23,12 @@ class AllJob extends StatefulWidget {
 class _AllJobState extends State<AllJob> {
   final JobController _jobController = Get.put(JobController());
 
-  var AllJob;
+  var JobData;
   Future<void> getData() async {
-    final responsePopularJob = await JobController().popularJob();
-    if (responsePopularJob != null) {
+    var responseAllJob = await JobController().popularJob();
+    if (responseAllJob != null) {
       setState(() {
-        AllJob = jsonDecode(responsePopularJob);
+        JobData = jsonDecode(responseAllJob);
       });
     }
   }
@@ -51,7 +51,10 @@ class _AllJobState extends State<AllJob> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
-                  const Button_Back(),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20),
+                    child: Button_Back(),
+                  ),
                   Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
@@ -66,31 +69,33 @@ class _AllJobState extends State<AllJob> {
                   Column(
                     children: [
                       const SizedBox(width: 10),
-                      if (AllJob == null)
+                      if (JobData == null)
                         ...{}
                       else ...{
-                        for (int i = 0; i < AllJob.length; i++) ...{
+                        for (int i = 0; i < JobData.length; i++) ...{
                           detailJob(
-                            
-                            avatar: AllJob[i]["business"]["avatar"],
-                            company: AllJob[i]["business"]["name"],
-                            position: AllJob[i]["position"],
-                            level: AllJob[i]["level"] is List
-                                ? AllJob[i]["level"].join(", ")
-                                : AllJob[i]["level"].toString(),
-                            skill: AllJob[i]["skill"] is List
-                                ? AllJob[i]["skill"].join(", ")
-                                : AllJob[i]["skill"].toString(),
-                            type: AllJob[i]["type"] is List
-                                ? AllJob[i]["type"].join(", ")
-                                : AllJob[i]["type"].toString(),
-                            salary: AllJob[i]["salary"],
-                            location: AllJob[i]["business"]["location"],
-                            onPress:()async{
-                                     final jobDetailsResponse = await _jobController
-                                    .jobDetails(AllJob[i]["id"]);
+                              avatar:
+                                  JobData[i]["business"]["avatar"].toString(),
+                              company:
+                                  JobData[i]["business"]["name"].toString(),
+                              position: JobData[i]["position"].toString(),
+                              level: JobData[i]["level"] is List
+                                  ? JobData[i]["level"].join(", ")
+                                  : JobData[i]["level"].toString(),
+                              skill: JobData[i]["skill"] is List
+                                  ? JobData[i]["skill"].join(", ")
+                                  : JobData[i]["skill"].toString(),
+                              type: JobData[i]["type"] is List
+                                  ? JobData[i]["type"].join(", ")
+                                  : JobData[i]["type"].toString(),
+                              salary: JobData[i]["salary"].toString(),
+                              location:
+                                  JobData[i]["business"]["location"].toString(),
+                              onPress: () async {
+                                final jobDetailsResponse = await _jobController
+                                    .jobDetails(JobData[i]["id"]);
                                 var jobDetails = jsonDecode(jobDetailsResponse);
-                                // ignore: use_build_context_synchronously
+
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -98,8 +103,7 @@ class _AllJobState extends State<AllJob> {
                                         DetailJob(data: jobDetails),
                                   ),
                                 );
-                            }
-                          ),
+                              }),
                         }
                       }
                     ],

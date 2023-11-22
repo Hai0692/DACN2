@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_job_hiring/pages/editProfile_screen.dart';
 import 'package:flutter_job_hiring/pages/splash_screen.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -93,49 +94,6 @@ class Authentication extends GetxController {
     }
   }
 
-  Future logoutUser({
-    required String email,
-    required String password,
-  }) async {
-    isLoading.value = true;
-    try {
-      var data = {
-        'email': email,
-        'password': password,
-      };
-
-      var response = await http.post(
-        Uri.parse('${url}seeker/logout'),
-        headers: {
-          'Accept': 'application/json',
-        },
-        body: data,
-      );
-
-      if (response.statusCode == 200) {
-        isLoading.value = false;
-        token.value = json.decode(response.body)['token'];
-        box.remove(token.value);
-        var result = jsonDecode(response.body);
-        Get.offAll(() => const SplashScreen());
-        print("logout success: $result");
-      } else if (response.statusCode == 401) {
-        // Handle unauthorized error (token invalid)
-        isLoading.value = false;
-        // You can display an error message or navigate to a login page here
-        print("Unauthorized: Token invalid");
-      } else {
-        isLoading.value = false;
-        print("HTTP Request Failed with status code: ${response.statusCode}");
-        // Handle other errors here
-      }
-    } catch (e) {
-      isLoading.value = false;
-      print(e.toString());
-      // Handle network or other exceptions here
-    }
-  }
-
   Future loginUser({
     required String email,
     required String password,
@@ -172,19 +130,67 @@ class Authentication extends GetxController {
       print(e.toString());
     }
   }
+
+  Future logOut() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('token');
+
+    Get.to(() => const SplashScreen());
+  }
+
+  //get user data
+  Future<dynamic> getUser(String token) async {
+    try {
+      var user = await http.get(Uri.parse('${url}seeker/profile'),
+          headers: {'Authorization': 'Bearer $token'});
+      if (user.statusCode == 200 && user.body != '') {
+        var result = jsonDecode(user.body);
+        print(result);
+        return user.body;
+      }
+    } catch (error) {
+      return error;
+    }
+  }
+
+
+
+  Future<void> updateUserData({
+    required String name,
+    String? email,
+    String? birthday,
+    String? address,
+    String? phone,
+     String? token,
+  }) async {
+    try {
+      if (token == null) {
+        throw ArgumentError('Token cannot be null');
+      }
+      var body = {
+        'name': name,
+        'email': email,
+        'address': address,
+        'phone': phone,
+        'birthday': birthday,
+      };
+      var user = await http.post(Uri.parse('${url}seeker/profile'),
+          body: jsonEncode(body), headers: {'Authorization': 'Bearer $token'});
+
+      if (user.statusCode == 200) {
+        final json = jsonDecode(user.body);
+        print('data updated');
+        print(json);
+      } else {
+        print('Response status code: ${user.statusCode}');
+        print('Response body: ${user.body}');
+        throw jsonDecode(user.body) ?? "Unknown Error Occured";
+      }
+    } catch (e, stackTrace) {
+      print('Error parsing response: $e');
+      print('StackTrace: $stackTrace');
+    }
+  }
+
+  
 }
-
-  //  //get user data
-  // Future<dynamic> getUser(String token) async {
-  //   try {
-  //     var user = await http.get(
-  //         Uri.parse('${url}user/profile'),
-  //         headers: {'Authorization': 'Bearer $token'});
-  //     if(user.statusCode == 200 && user.body !=''){
-  //       return user.body;
-  //     }
-  //   }catch (error) {
-  //     return error;
-  //   }
-  // }
-

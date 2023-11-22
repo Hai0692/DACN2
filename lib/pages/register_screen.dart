@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -10,7 +8,6 @@ import '../controllers/authentication.dart';
 import '../widgets/buttonInline.dart';
 import '../widgets/iconMedia.dart';
 import '../widgets/inputTextform.dart';
-import 'package:http/http.dart' as http;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -159,6 +156,15 @@ class _RegisterPageState extends State<RegisterPage> {
                                     password: _passwordController.text.trim(),
                                     phone: _phoneController.text.trim(),
                                   );
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "Register success",
+                                      ),
+                                      duration: Duration(seconds: 3),
+                                    ),
+                                  );
                                 } else {
                                   print("unsuccess");
                                 }
@@ -238,6 +244,4 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
-
-
 }

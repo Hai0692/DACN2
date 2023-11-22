@@ -32,7 +32,10 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            Button_Back(),
+            const Padding(
+              padding: EdgeInsets.only(left: 20),
+              child: Button_Back(),
+            ),
             Container(
                 margin:
                     const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
@@ -112,11 +115,14 @@ class _LoginPageState extends State<LoginPage> {
                             email: _emailController.text.trim(),
                             password: _passwordController.text.trim(),
                           );
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (context) => const HomePage(),
-                          //   ),
-                          // );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "Login success",
+                              ),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
                         }
                       },
                     ),

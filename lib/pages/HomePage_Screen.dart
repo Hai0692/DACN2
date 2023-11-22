@@ -2,10 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_job_hiring/controllers/JobController.dart';
+import 'package:flutter_job_hiring/controllers/authentication.dart';
+import 'package:flutter_job_hiring/pages/AllBusiness_screen.dart';
 import 'package:flutter_job_hiring/pages/AllJob_Screen.dart';
 import 'package:flutter_job_hiring/widgets/buttonInline.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../commons/color_common.dart';
 import '../controllers/businessController.dart';
@@ -28,12 +31,30 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final BusinessController _businessController = Get.put(BusinessController());
   final JobController _jobController = Get.put(JobController());
+  final Authentication _authentication = Get.put(Authentication());
 
   var businessData;
   var popularJobData;
+  var user;
+  String? tokenUser;
+
   Future<void> getData() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    final token = pref.getString('token') ?? '';
+
+    tokenUser = token;
+
     final responseBusiness = await BusinessController().getBusiness();
     final responsePopularJob = await JobController().popularJob();
+    if (token.isNotEmpty) {
+      final responseUser = await Authentication().getUser(token);
+
+      if (responseUser != null) {
+        setState(() {
+          user = json.decode(responseUser);
+        });
+      }
+    }
     if (responseBusiness != null && responsePopularJob != null) {
       setState(() {
         businessData = jsonDecode(responseBusiness);
@@ -67,21 +88,31 @@ class _HomePageState extends State<HomePage> {
                           style: GoogleFonts.poppins(
                             color: ColorApp().color_black,
                           ), // Default text style
-                          children: const <TextSpan>[
-                            TextSpan(
+                          children: <TextSpan>[
+                            const TextSpan(
                               text: 'Welcom back!\n',
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 20,
                               ),
                             ),
-                            TextSpan(
-                              text: 'John',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25,
+                            if (user == null) ...{
+                              const TextSpan(
+                                text: "None",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25,
+                                ),
+                              )
+                            } else ...{
+                              TextSpan(
+                                text: user["seeker"]["name"].toString(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25,
+                                ),
                               ),
-                            ),
+                            }
                           ],
                         ),
                       ),
@@ -123,8 +154,6 @@ class _HomePageState extends State<HomePage> {
                               level: popularJobData[i]["level"] is List
                                   ? popularJobData[i]["level"].join(", ")
                                   : popularJobData[i]["level"].toString(),
-
-                              //  level: popularJobData[i]["level"][0].toString(),
                               salary: popularJobData[i]["salary"].toString(),
                               skill: popularJobData[i]["skill"] is List
                                   ? popularJobData[i]["skill"].join(", ")
@@ -132,14 +161,12 @@ class _HomePageState extends State<HomePage> {
                               type: popularJobData[i]["type"] is List
                                   ? popularJobData[i]["type"].join(", ")
                                   : popularJobData[i]["level"].toString(),
-
-                              //    type: popularJobData[i]["type"][0].toString(),
                               avatar: popularJobData[i]["business"]["avatar"],
                               location: popularJobData[i]["business"]
                                       ["location"]
                                   .toString(),
                               onPress: () async {
-                                final jobDetailsResponse = await _jobController
+                                var jobDetailsResponse = await _jobController
                                     .jobDetails(popularJobData[i]["id"]);
                                 var jobDetails = jsonDecode(jobDetailsResponse);
                                 // ignore: use_build_context_synchronously
@@ -160,9 +187,14 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 20),
                   See_All(
                     name: "Top Company",
-                    onPress: () {},
+                    onPress: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AllBusiness()));
+                    },
                   ),
-                  for (int i = 0; i < 4; i++) ...[
+                  for (int i = 0; i < 5; i++) ...[
                     if (businessData == null)
                       ...{}
                     else ...{
@@ -172,11 +204,12 @@ class _HomePageState extends State<HomePage> {
                         career: businessData[i]["career"].toString(),
                         avatar: businessData[i]["avatar"].toString(),
                         onPress: () async {
-                          final businessDetailResponse =
+                          var businessDetailResponse =
                               await _businessController.BusinessDetails(
                                   businessData[i]["id"]);
                           var businessDetails =
                               jsonDecode(businessDetailResponse);
+                          // ignore: use_build_context_synchronously
                           Navigator.push(
                             context,
                             MaterialPageRoute(
