@@ -6,7 +6,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 import '../commons/color_common.dart';
 import '../controllers/authentication.dart';
-import '../models/auth_model.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/buttonBack.dart';
 import '../widgets/buttonInline.dart';
 import '../widgets/iconMedia.dart';
@@ -96,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                Consumer<AuthModel>(builder: (context, auth, child) {
+                Consumer<AuthProvider>(builder: (context, auth, child) {
                   return Positioned(
                     top: 60,
                     left: 25,
@@ -104,6 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                       size: 320,
                       text: "Login",
                       onPress: () async {
+                      
                         final token = await _authenticationController.getToken(
                           email: _emailController.text.trim(),
                           password: _passwordController.text.trim(),
@@ -115,6 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                             email: _emailController.text.trim(),
                             password: _passwordController.text.trim(),
                           );
+                      
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text(

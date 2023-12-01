@@ -150,23 +150,29 @@ class _RegisterPageState extends State<RegisterPage> {
                               text: "Register",
                               onPress: () async {
                                 if (_formkey.currentState!.validate()) {
-                                  await _authenticationController.registerUser(
-                                    name: _nameController.text.trim(),
-                                    email: _emailController.text.trim(),
-                                    password: _passwordController.text.trim(),
-                                    phone: _phoneController.text.trim(),
-                                  );
+                                  try {
+                                    await _authenticationController
+                                        .registerUser(
+                                      email: _emailController.text,
+                                      name: _nameController.text,
+                                      phone: _phoneController.text,
+                                      password: _passwordController.text,
+                                    );
 
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        "Register success",
+                                    // ScaffoldMessenger.of(context).showSnackBar(
+                                    //   const SnackBar(
+                                    //     content: Text(
+                                    //         'User registered successfully!'),
+                                    //   ),
+                                    // );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Failed to register user. Error: $e'),
                                       ),
-                                      duration: Duration(seconds: 3),
-                                    ),
-                                  );
-                                } else {
-                                  print("unsuccess");
+                                    );
+                                  }
                                 }
                               },
                             ));

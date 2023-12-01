@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_job_hiring/pages/favorite_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../commons/color_common.dart';
 import '../pages/HomePage_Screen.dart';
+import '../pages/abc.dart';
 import '../pages/profile_screen.dart';
+import '../pages/seach_screen.dart';
 
 class Custome_Bottom extends StatelessWidget {
   const Custome_Bottom({
@@ -41,7 +44,12 @@ class Custome_Bottom extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const FavoritePage()));
+            },
             icon: FaIcon(
               FontAwesomeIcons.solidHeart,
               color: ColorApp().color_white,
@@ -49,7 +57,12 @@ class Custome_Bottom extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Test()));
+            },
             icon: FaIcon(
               FontAwesomeIcons.search,
               color: ColorApp().color_white,

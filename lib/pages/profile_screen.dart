@@ -334,6 +334,8 @@ class _profileScreenState extends State<profileScreen> {
                       GestureDetector(
                         onTap: () async {
                           _authentication.logOut();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("login success")));
                         },
                         child: Row(
                           children: [

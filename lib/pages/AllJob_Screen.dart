@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_job_hiring/controllers/favoriteController.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -22,10 +23,11 @@ class AllJob extends StatefulWidget {
 
 class _AllJobState extends State<AllJob> {
   final JobController _jobController = Get.put(JobController());
+  final FavoriteController favoriteController = Get.put(FavoriteController());
 
   var JobData;
   Future<void> getData() async {
-    var responseAllJob = await JobController().popularJob();
+    var responseAllJob = await JobController().job();
     if (responseAllJob != null) {
       setState(() {
         JobData = jsonDecode(responseAllJob);
@@ -69,11 +71,14 @@ class _AllJobState extends State<AllJob> {
                   Column(
                     children: [
                       const SizedBox(width: 10),
-                      if (JobData == null)
-                        ...{}
-                      else ...{
+                      if (JobData == null) ...{
+                        const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      } else ...{
                         for (int i = 0; i < JobData.length; i++) ...{
                           detailJob(
+                              id: JobData[i]["id"],
                               avatar:
                                   JobData[i]["business"]["avatar"].toString(),
                               company:

@@ -1,32 +1,44 @@
 class UserModel {
   UserModel({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.gender,
+    this.id,
+    this.name,
+    this.email,
+    this.phone,
+    this.gender,
+    this.birthday,
+    this.address,
   });
-  late final int id;
-  late final String name;
-  late final String email;
-  late final String phone;
-  late final String gender;
 
-  UserModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    email = json['email'];
-    gender = json['gender'];
-    phone = json['phone'];
+  late int? id;
+  late String? name;
+  late String? email;
+  late String? phone;
+  late String? gender;
+  late DateTime? birthday;
+  late String? address;
+
+  factory UserModel.fromJson(dynamic json) {
+    return UserModel(
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      email: json['email'] as String?,
+      gender: json['gender'] as String?,
+      phone: json['phone'] as String?,
+      birthday: _parseDateTime(json['birthday']),
+      address: json['address'] as String?,
+    );
   }
 
-  Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['id'] = id;
-    _data['name'] = name;
-    _data['email'] = email;
-    _data['gender'] = gender;
-    _data['phone'] = phone;
-    return _data;
+  static DateTime? _parseDateTime(dynamic date) {
+    if (date == null) return null;
+    if (date is String) {
+      return DateTime.tryParse(date);
+    }
+    return null;
+  }
+
+  @override
+  String toString() {
+    return 'User {id: $id, name: $name, phone: $phone, email: $email, birthay: $birthday, address: $address,}';
   }
 }

@@ -9,7 +9,11 @@ class InputTextform extends StatefulWidget {
   final String text;
   final FaIcon icon;
   final TextEditingController controller;
-  const InputTextform({super.key, required this.text, required this.icon, required this.controller});
+  const InputTextform(
+      {super.key,
+      required this.text,
+      required this.icon,
+      required this.controller});
 
   @override
   State<InputTextform> createState() => _InputTextformState();
@@ -47,7 +51,12 @@ class _InputTextformState extends State<InputTextform> {
                 fontSize: 16,
               ),
             ),
-           
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please enter this files';
+              }
+              return null;
+            },
           ),
         ),
       ),

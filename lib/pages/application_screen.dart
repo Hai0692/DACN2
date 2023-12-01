@@ -34,10 +34,12 @@ class _ApplicationPageState extends State<ApplicationPage> {
   final TextEditingController _coverLetterController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
-  late File resume_path;
-  bool _isLoading = false;
 
   FilePickerResult? result;
+  late File resume_path;
+  
+  bool _isLoading = false;
+
   late String tokenUser;
   var user;
   // var userId;

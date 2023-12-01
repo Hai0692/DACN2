@@ -1,90 +1,162 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class EditProfileScreen extends StatefulWidget {
+import '../controllers/test.dart';
+import '../widgets/card_jobdetails.dart';
+
+class Test extends StatefulWidget {
+  const Test({super.key});
+
   @override
-  _EditProfileScreenState createState() => _EditProfileScreenState();
+  _SearchScreenState createState() => _SearchScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _birthdayController = TextEditingController();
+class _SearchScreenState extends State<Test> {
+  final TextEditingController _positionController = TextEditingController();
+  final TextEditingController _levelController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TestController jobController = Get.put(TestController());
+  String position = '';
+  String level = '';
+  String location = '';
+  void _onSearchPressed() {
+    setState(() {
+      position = _positionController.text;
+      level = _levelController.text;
+      location = _locationController.text;
+    });
 
-  bool validateData() {
-  final name = _nameController.text;
-  final email = _emailController.text;
-  final phone = _phoneController.text;
-  final address = _addressController.text;
-  final birthday = _birthdayController.text;
-  
-  return true;
-}
+    jobController.searchJobs(position, level.split(','), location);
+  }
 
+  var searchResult;
+  Future<void> getData() async {
+    var response =
+        await jobController.searchJobs(position, level.split(','), location);
+    if (response != null) {
+      setState(() {
+        searchResult =
+            List<Map<String, dynamic>>.from(json.decode(response)["data"]);
+        //  searchResult = jsonDecode(response);
+      });
+    }
+  }
 
-  // Hàm này hiển thị thông báo lỗi nếu cập nhật không thành công
-  void showErrorDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Cập nhật không thành công'),
-          content: Text('Có lỗi xảy ra trong quá trình cập nhật thông tin.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Đóng'),
-            ),
-          ],
-        );
-      },
-    );
+  @override
+  void initState() {
+    getData();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chỉnh sửa thông tin cá nhân'),
+        title: const Text('Job Search'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: <Widget>[
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Họ và tên'),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _positionController,
+              decoration: const InputDecoration(labelText: 'Position'),
             ),
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+            TextField(
+              controller: _levelController,
+              decoration:
+                  const InputDecoration(labelText: 'Level (comma-separated)'),
             ),
-            TextFormField(
-              controller: _phoneController,
-              decoration: InputDecoration(labelText: 'Số điện thoại'),
+            TextField(
+              controller: _locationController,
+              decoration: const InputDecoration(labelText: 'Location'),
             ),
-            TextFormField(
-              controller: _addressController,
-              decoration: InputDecoration(labelText: 'Địa chỉ'),
-            ),
-            TextFormField(
-              controller: _birthdayController,
-              decoration: InputDecoration(labelText: 'Ngày sinh'),
-            ),
-            SizedBox(height: 20),
+            const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: () async {
-                if (validateData()) {
-                  // Gọi hàm cập nhật thông tin ở đây
-                  // Nếu cập nhật thành công, có thể chuyển màn hình hoặc hiển thị thông báo thành công
-                  // Nếu cập nhật không thành công, gọi showErrorDialog()
-                }
-              },
-              child: Text('Cập nhật thông tin'),
+              onPressed: _onSearchPressed,
+              child: const Text('Search'),
             ),
+            if (searchResult == null)
+              ...{}
+            else ...{
+              Expanded(
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: searchResult.length,
+                  itemBuilder: (BuildContext context, int i) {
+                    Map<String, dynamic> historyApply = searchResult![i];
+                    Map<String, dynamic> jobDetails = historyApply["job"];
+                    Map<String, dynamic> businessDetails =
+                        jobDetails["business"];
+
+                    return detailJob(
+                      id: jobDetails["id"],
+                      avatar: businessDetails["avatar"].toString(),
+                      company: businessDetails["name"].toString(),
+                      level: jobDetails["level"].join(", "),
+                      location: businessDetails["location"].toString(),
+                      position: jobDetails["position"].toString(),
+                      salary: jobDetails["salary"].toString(),
+                      skill: jobDetails["skill"].join(", "),
+                      type: jobDetails["type"].join(", "),
+                      onPress: () async {},
+                    );
+                  },
+                ),
+              ),
+            }
+            // FutureBuilder(
+            //   future: jobController.searchResults.stream.first,
+            //   builder: (context, snapshot) {
+            //     if (snapshot.connectionState == ConnectionState.waiting) {
+            //       return const Center(child: CircularProgressIndicator());
+            //     } else if (snapshot.hasError) {
+            //       return Center(child: Text('Error: ${snapshot.error}'));
+            //     } else {
+            //       if (searchResult == null || searchResult!.isEmpty) {
+            //         return const Center(
+            //           child: Text(
+            //             "No result",
+            //             style: TextStyle(
+            //               color: Colors.red,
+            //               fontSize: 20,
+            //               fontWeight: FontWeight.normal,
+            //             ),
+            //           ),
+            //         );
+            //       } else {
+            //         return Expanded(
+            //           child: ListView.builder(
+            //             scrollDirection: Axis.vertical,
+            //             itemCount: searchResult!.length,
+            //             itemBuilder: (BuildContext context, int i) {
+            //               Map<String, dynamic> historyApply = searchResult![i];
+            //               Map<String, dynamic> jobDetails = historyApply["job"];
+            //               Map<String, dynamic> businessDetails =
+            //                   jobDetails["business"];
+
+            //               return detailJob(
+            //                 id: jobDetails["id"],
+            //                 avatar: businessDetails["avatar"].toString(),
+            //                 company: businessDetails["name"].toString(),
+            //                 level: jobDetails["level"].join(", "),
+            //                 location: businessDetails["location"].toString(),
+            //                 position: jobDetails["position"].toString(),
+            //                 salary: jobDetails["salary"].toString(),
+            //                 skill: jobDetails["skill"].join(", "),
+            //                 type: jobDetails["type"].join(", "),
+            //                 onPress: () async {},
+            //               );
+            //             },
+            //           ),
+            //         );
+            //       }
+            //     }
+            //   },
+            // )
           ],
         ),
       ),
