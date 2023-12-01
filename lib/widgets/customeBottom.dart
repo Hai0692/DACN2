@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../commons/color_common.dart';
 import '../pages/HomePage_Screen.dart';
-import '../pages/abc.dart';
 import '../pages/profile_screen.dart';
 import '../pages/seach_screen.dart';
 
@@ -61,7 +60,7 @@ class Custome_Bottom extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const Test()));
+                      builder: (context) =>  SearchPage()));
             },
             icon: FaIcon(
               FontAwesomeIcons.search,

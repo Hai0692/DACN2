@@ -318,7 +318,8 @@ class _HomePageState extends State<HomePage> {
             ),
           )
         ]),
-        bottomNavigationBar: const Custome_Bottom());
+        bottomNavigationBar: const Custome_Bottom()
+        );
   }
 
   ImageProvider _getImageProvider(String imageUrl) {
