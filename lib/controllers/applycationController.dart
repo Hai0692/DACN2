@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:toast/toast.dart';
 import '../constains/constains.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -93,4 +92,5 @@ class ApplycationController extends GetxController {
       print(e);
     }
   }
+
 }

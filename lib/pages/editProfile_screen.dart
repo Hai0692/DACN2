@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_job_hiring/controllers/authentication.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,18 +28,21 @@ class Edit_Profile extends StatefulWidget {
 class _Edit_ProfileState extends State<Edit_Profile> {
   XFile? _pickerFile;
   final ImagePicker _picker = ImagePicker();
-  DateTime? selectedDate;
+  // ImageProvider avatarImageProvider =
+  //     const AssetImage("assets/images/logo.png");
 
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _dayOfbirthController = TextEditingController();
+  DateTime? selectedDate;
+  var isLoading = false.obs;
+  late TextEditingController _nameController;
+  late TextEditingController _addressController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  late TextEditingController _dayOfbirthController;
 
   final Authentication _authentication = Get.put(Authentication());
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   var user;
-  String? tokenUser;
+  late String tokenUser;
   Future<void> getData() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     var token = pref.getString('token') ?? '';
@@ -58,20 +62,28 @@ class _Edit_ProfileState extends State<Edit_Profile> {
   @override
   void initState() {
     getData();
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _phoneController = TextEditingController();
+    _addressController = TextEditingController();
+    _phoneController = TextEditingController();
+    _dayOfbirthController = TextEditingController();
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     if (user != null && user["seeker"] != null) {
       _nameController = TextEditingController(text: user["seeker"]["name"]);
       _emailController = TextEditingController(text: user["seeker"]["email"]);
       _phoneController = TextEditingController(text: user["seeker"]["phone"]);
       _addressController =
           TextEditingController(text: user["seeker"]["address"]);
+
       _dayOfbirthController =
           TextEditingController(text: user["seeker"]["birthday"]);
     }
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(children: [
           const Background(),
@@ -102,10 +114,15 @@ class _Edit_ProfileState extends State<Edit_Profile> {
                       child: Stack(children: [
                         CircleAvatar(
                           radius: 35.0,
-                          backgroundImage: _pickerFile == null
-                              ? const AssetImage("assets/images/logo.png")
-                                  as ImageProvider
-                              : FileImage(File(_pickerFile!.path)),
+                         // backgroundImage: avatarImageProvider,
+
+             
+                          backgroundImage:
+                           _pickerFile == null
+                              ? const AssetImage("assets/images/logo.png")as ImageProvider     
+                              : FileImage(File(_pickerFile!.path))
+                                  //  ?? NetworkImage(   user["seeker"]["avatar"].toString(),)
+                          
                         ),
                         Positioned(
                           bottom: 2.0,
@@ -143,9 +160,7 @@ class _Edit_ProfileState extends State<Edit_Profile> {
                       const SizedBox(height: 10),
                       InputTextform(
                         controller: _nameController,
-                        text: user["seeker"]["name"] != null
-                            ? user["seeker"]["name"].toString()
-                            : "name",
+                        text: "name",
                         icon: FaIcon(
                           FontAwesomeIcons.user,
                           color: ColorApp().color_grey,
@@ -155,9 +170,7 @@ class _Edit_ProfileState extends State<Edit_Profile> {
                       const SizedBox(height: 20.0),
                       InputTextform(
                         controller: _emailController,
-                        text: user["seeker"]["email"] != null
-                            ? user["seeker"]["email"].toString()
-                            : "email",
+                        text: "email",
                         icon: FaIcon(
                           FontAwesomeIcons.envelope,
                           color: ColorApp().color_grey,
@@ -167,9 +180,7 @@ class _Edit_ProfileState extends State<Edit_Profile> {
                       const SizedBox(height: 20),
                       InputTextform(
                         controller: _addressController,
-                        text: user["seeker"]["address"] != null
-                            ? user["seeker"]["address"].toString()
-                            : "address",
+                        text: "address",
                         icon: FaIcon(
                           FontAwesomeIcons.solidAddressBook,
                           color: ColorApp().color_grey,
@@ -179,9 +190,7 @@ class _Edit_ProfileState extends State<Edit_Profile> {
                       const SizedBox(height: 20),
                       InputTextform(
                         controller: _phoneController,
-                        text: user["seeker"]["phone"] != null
-                            ? user["seeker"]["phone"].toString()
-                            : "phone",
+                        text: "phone",
                         icon: FaIcon(
                           FontAwesomeIcons.phone,
                           color: ColorApp().color_grey,
@@ -224,9 +233,7 @@ class _Edit_ProfileState extends State<Edit_Profile> {
                                   ),
                                 ),
                                 border: InputBorder.none,
-                                hintText: user["seeker"]["birthday"] != null
-                                    ? user["seeker"]["birthday"].toString()
-                                    : "birthday",
+                                hintText: "Ex: 2002-06-09",
                                 hintStyle: GoogleFonts.poppins(
                                   color: ColorApp().color_grey,
                                   fontSize: 16,
@@ -238,31 +245,18 @@ class _Edit_ProfileState extends State<Edit_Profile> {
                       ),
                       const SizedBox(height: 20),
                     },
-                    Center(
-                        child: ButtonInline(
-                            size: 320,
-                            text: "Update Profile",
-                            onPress: () async {
-                              try {
-                                if (_nameController.text.isEmpty) {
-                                  // Hiển thị thông báo hoặc thực hiện các hành động phù hợp khi 'name' trống rỗng.
-                                  return;
-                                }
-                                await _authentication.updateUserData(
-                                  token: tokenUser,
-                                  email: _emailController.text.toString(),
-                                  address: _addressController.text.toString(),
-                                  phone: _phoneController.text.toString(),
-                                  name: _nameController.text.toString(),
-                                  birthday:
-                                      _dayOfbirthController.text.toString(),
-                                );
-                                print(_nameController.text);
-                                print(tokenUser);
-                              } catch (e) {
-                                print("Error updating profile: $e");
-                              }
-                            })),
+                    Obx(() {
+                      return isLoading.value
+                          ? const CircularProgressIndicator()
+                          : Center(
+                              child: ButtonInline(
+                                  size: 320,
+                                  text: "Update Profile",
+                                  onPress: () async {
+                                    await updateUser();
+                                  }));
+                    }),
+
                     const SizedBox(height: 20),
                     //
                   ],
@@ -288,14 +282,9 @@ class _Edit_ProfileState extends State<Edit_Profile> {
       setState(() {
         selectedDate = picked;
         final formattedDate =
-            formatDate(selectedDate!, [dd, '/', mm, '/', yyyy]);
+            formatDate(selectedDate!, [yyyy, '-', mm, '-', dd]);
         _dayOfbirthController.text = formattedDate;
       });
-
-      final formattedDate = formatDate(picked, [dd, '/', mm, '/', yyyy]);
-
-      // Định dạng ngày
-      print('Ngày đã chọn: $formattedDate');
     }
   }
 
@@ -352,5 +341,40 @@ class _Edit_ProfileState extends State<Edit_Profile> {
     setState(() {
       _pickerFile = pickedFile;
     });
+  }
+
+  Future<void> updateUser() async {
+    isLoading.value = true;
+    try {
+      if (_formkey.currentState != null && _formkey.currentState!.validate()) {
+       late File avatarFile;
+        if (_pickerFile != null) {
+          avatarFile = File(_pickerFile!.path);
+        }
+        await _authentication.updateUser1(
+          token: tokenUser,
+          email: _emailController.text.toString(),
+          address: _addressController.text.toString(),
+          phone: _phoneController.text.toString(),
+          name: _nameController.text.toString(),
+          birthday: _dayOfbirthController.text.toString(),
+         avatar: avatarFile, 
+        );
+      //  if (avatarFile != null) {
+      //   setState(() {
+      //     avatarImageProvider = FileImage(avatarFile);
+      //   });
+      // }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile updated successfully'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error updating profile: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

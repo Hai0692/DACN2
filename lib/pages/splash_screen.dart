@@ -18,134 +18,115 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-   @override
-  void initState() {
-    super.initState();
-    _checkIfLoggedIn();
-  }
+  bool isLoggedIn = false;
 
-  _checkIfLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-
-    if (isLoggedIn) {
-      // Nếu người dùng đã đăng nhập, chuyển hướng sang trang Home
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else {
-      // Nếu người dùng chưa đăng nhập, hiển thị trang đăng nhập
-      // (Bạn có thể thay thế bằng trang đăng nhập của bạn)
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => SplashScreen()),
-      );
-    }
-  }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Stack(
-              alignment: Alignment.center,
-              children: <Widget>[
-                Container(
-                  height: 400,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: <Color>[
-                        HexColor("#7DF260"),
-                        HexColor("#AAE69B"),
-                        HexColor("#FFFFFF").withAlpha(0),
-                      ],
+    if (isLoggedIn == true) {
+      return const HomePage();
+    } else {
+      return Scaffold(
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  Container(
+                    height: 400,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: <Color>[
+                          HexColor("#7DF260"),
+                          HexColor("#AAE69B"),
+                          HexColor("#FFFFFF").withAlpha(0),
+                        ],
+                      ),
                     ),
                   ),
+                  const Positioned(
+                    top: 100,
+                    child: Image(
+                      image: AssetImage("assets/images/man.png"),
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 10),
+              const Image(
+                image: AssetImage("assets/images/logo.png"),
+                width: 80,
+              ),
+              const SizedBox(height: 5),
+              RichText(
+                text: TextSpan(
+                  style: GoogleFonts.poppins(
+                    color: ColorApp().color_black,
+                  ), // Default text style
+                  children: const <TextSpan>[
+                    TextSpan(
+                      text: 'Indeed',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'Seeking',
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
                 ),
-                const Positioned(
-                  top: 100,
-                  child: Image(
-                    image: AssetImage("assets/images/man.png"),
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(height: 10),
-            const Image(
-              image: AssetImage("assets/images/logo.png"),
-              width: 80,
-            ),
-            const SizedBox(height: 5),
-            RichText(
-              text: TextSpan(
-                style: GoogleFonts.poppins(
-                  color: ColorApp().color_black,
-                ), // Default text style
-                children: const <TextSpan>[
-                  TextSpan(
-                    text: 'Indeed',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25,
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'Seeking',
-                    style: TextStyle(
+              ),
+              const SizedBox(height: 15),
+              ButtonInline(
+                text: "Login",
+                onPress: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const LoginPage()));
+                },
+                size: 250,
+              ),
+              const SizedBox(height: 15),
+              ButtonOutline(
+                text: "Register",
+                onPress: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const RegisterPage()));
+                },
+              ),
+              const SizedBox(height: 40),
+              GestureDetector(
+                onTap: () {},
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    "Continue as a guest",
+                    style: GoogleFonts.poppins(
+                      color: ColorApp().color_black,
+                      fontWeight: FontWeight.w400,
                       fontSize: 18,
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 15),
-            ButtonInline(
-              text: "Login",
-              onPress: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const LoginPage()));
-              },
-              size: 250,
-            ),
-            const SizedBox(height: 15),
-            ButtonOutline(
-              text: "Register",
-              onPress: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const RegisterPage()));
-              },
-            ),
-            const SizedBox(height: 40),
-            GestureDetector(
-              onTap: () {},
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(),
-                    ),
-                  );
-                },
-                child: Text(
-                  "Continue as a guest",
-                  style: GoogleFonts.poppins(
-                    color: ColorApp().color_black,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 18,
-                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 }

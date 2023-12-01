@@ -55,8 +55,8 @@ class businessDetails extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: <Color>[
-                      HexColor("#6BCB7A"),
-                      HexColor("#6BCB7A").withAlpha(80),
+                      HexColor("#C8C343"),
+                      HexColor("#EA3677").withAlpha(40),
                     ],
                   ),
                   borderRadius: const BorderRadius.only(

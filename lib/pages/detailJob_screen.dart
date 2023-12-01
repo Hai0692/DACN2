@@ -53,6 +53,7 @@ class _DetailJobState extends State<DetailJob> {
 //
                   detailJob(
                     onPress: () {},
+                      id: widget.data["id"],
                     avatar: widget.data["business"]["avatar"].toString(),
                     company: widget.data["business"]["name"].toString(),
                     position: widget.data["position"].toString(),

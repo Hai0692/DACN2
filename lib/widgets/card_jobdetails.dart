@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_job_hiring/providers/favorite_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:provider/provider.dart';
 
 import '../commons/color_common.dart';
 
 class detailJob extends StatelessWidget {
+  final int id;
   final String position;
   final String company;
   final String level;
@@ -15,8 +18,11 @@ class detailJob extends StatelessWidget {
   final String salary;
   final String avatar;
   final VoidCallback onPress;
+  final VoidCallback? onPressFavorite;
+ 
   const detailJob({
     super.key,
+   required this.id,
     required this.position,
     required this.company,
     required this.level,
@@ -26,10 +32,14 @@ class detailJob extends StatelessWidget {
     required this.salary,
     required this.avatar,
     required this.onPress,
+    this.onPressFavorite,
+   
   });
 
   @override
   Widget build(BuildContext context) {
+    final favoriteProvider = Provider.of<FavoriteProvider>(context);
+    final bool isInFavorites = favoriteProvider.isInFavorites(id);
     return GestureDetector(
       onTap: onPress,
       child: Container(
@@ -70,6 +80,7 @@ class detailJob extends StatelessWidget {
                   children: [
                     Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Image.network(
                             avatar,
@@ -77,22 +88,37 @@ class detailJob extends StatelessWidget {
                             height: 50,
                             fit: BoxFit.contain,
                           ),
-                          const SizedBox(width: 20),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                position,
-                                style: GoogleFonts.poppins(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                company,
-                                style: GoogleFonts.poppins(
-                                    fontSize: 16, fontWeight: FontWeight.w500),
-                              )
-                            ],
-                          )
+                          //    const SizedBox(width: 20),
+                          SizedBox(
+                            width: 200,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  position,
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  company,
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                  overflow: TextOverflow.ellipsis,
+                                )
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                      
+                           isInFavorites ? Icons.favorite : Icons.favorite_border_outlined,
+                              color: HexColor("#F54209"),
+                              size: 15,
+                            ),
+                            onPressed: onPressFavorite ?? () {},
+                          ),
                         ]),
                     const SizedBox(height: 5),
                     Row(
