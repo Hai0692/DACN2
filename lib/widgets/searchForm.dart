@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../commons/color_common.dart';
+import '../pages/seach_screen.dart';
 
 class Search_Form extends StatelessWidget {
   const Search_Form({
@@ -40,14 +41,23 @@ class Search_Form extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-                color: Colors.black, borderRadius: BorderRadius.circular(5)),
-            child: const Image(
-              width: 24,
-              image: AssetImage("assets/icons/sliders.png"),
+          GestureDetector(
+             onTap:(){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>  SearchPage()));
+               
+               },
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                  color: Colors.black, borderRadius: BorderRadius.circular(5)),
+              child: const Image(
+                width: 24,
+                image: AssetImage("assets/icons/sliders.png"),
+              ),
             ),
           )
         ]),
