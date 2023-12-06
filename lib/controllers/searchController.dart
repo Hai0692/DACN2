@@ -10,7 +10,7 @@ class SearchController extends GetxController {
   final TextEditingController levelController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
 
-  Rx<List<Job>> searchResults = Rx<List<Job>>([]);
+  Rx<List<JobTest>> searchResults = Rx<List<JobTest>>([]);
 
   Future<void> searchJobs() async {
     var position = positionController.text;
@@ -20,7 +20,7 @@ class SearchController extends GetxController {
     searchResults.value = await _searchJobs(position, levels, location);
   }
 
-  Future<List<Job>> _searchJobs(
+  Future<List<JobTest>> _searchJobs(
       String? position, List<String>? levels, String? location) async {
     try {
       var levelsString = levels?.isNotEmpty ?? false ? levels!.join(',') : '';
@@ -40,12 +40,9 @@ class SearchController extends GetxController {
 
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
-
-        // Lấy danh sách công việc từ khóa 'data'
         var jobsData = data['data'] as List<dynamic>;
 
-        // Chuyển đổi dữ liệu công việc từ Map sang danh sách Job
-        List<Job> jobs = jobsData.map((jobData) => Job.fromJson(jobData)).toList();
+        List<JobTest> jobs = jobsData.map((jobData) => JobTest.fromJson(jobData)).toList();
 
         searchResults.value = jobs;
         return jobs;

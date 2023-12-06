@@ -6,6 +6,7 @@ import 'package:hexcolor/hexcolor.dart';
 import '../commons/color_common.dart';
 
 class businessDetails extends StatelessWidget {
+  final int id;
   final String avatar;
   final String name;
   final String location;
@@ -16,6 +17,7 @@ class businessDetails extends StatelessWidget {
   final VoidCallback onPress;
   const businessDetails({
     super.key,
+    required this.id,
     required this.avatar,
     required this.name,
     required this.location,
@@ -55,8 +57,8 @@ class businessDetails extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: <Color>[
-                      HexColor("#C8C343"),
-                      HexColor("#EA3677").withAlpha(40),
+                      HexColor("#FFFFFF"),
+                      HexColor("#7F7F7F").withAlpha(40),
                     ],
                   ),
                   borderRadius: const BorderRadius.only(

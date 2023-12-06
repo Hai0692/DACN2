@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_job_hiring/controllers/authentication.dart';
+import 'package:flutter_job_hiring/pages/login_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import '../commons/color_common.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:glassmorphism/glassmorphism.dart';
+
+import '../widgets/buttonBack.dart';
+import '../widgets/buttonInline.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -16,6 +18,8 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  final Authentication controller = Get.put(Authentication());
+  final TextEditingController emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,40 +28,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
-            Container(
-              margin: const EdgeInsets.all(20),
-              width: 35,
-              height: 35,
-              decoration: BoxDecoration(
-                  color: ColorApp().color_white,
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  border: Border.all(
-                    color: ColorApp().color_black, // Border color
-                    width: 1.0, // Border width
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withAlpha(25),
-                      spreadRadius: 0,
-                      blurRadius: 4,
-                      offset: Offset(0, 5),
-                    )
-                  ]),
-              child: Center(
-                child: IconButton(
-                    icon: FaIcon(
-                      FontAwesomeIcons.chevronLeft,
-                      color: ColorApp().color_green,
-                      size: 20,
-                    ),
-                    onPressed: () {
-                      // Navigator.pop(context);
-                    }),
-              ),
+            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.only(left: 20, top: 10),
+              child: Button_Back(),
             ),
             Container(
-                margin: const EdgeInsets.only(left: 30, top: 30),
+                margin: const EdgeInsets.only(left: 30, top: 20),
                 child: Text(
                   "Forgot Password",
                   style: GoogleFonts.poppins(
@@ -75,12 +52,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     fontWeight: FontWeight.w400),
               ),
             ),
-            SizedBox(height: 30.0),
+            const SizedBox(height: 30.0),
             Center(
               child: Container(
                 width: 350,
                 height: 60,
-                padding: EdgeInsets.symmetric(horizontal: 7.0, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 7.0, vertical: 4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
@@ -93,13 +71,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       color: Colors.black.withAlpha(20),
                       spreadRadius: 1,
                       blurRadius: 10,
-                      offset: Offset(0, 3), // changes position of shadow
+                      offset: const Offset(0, 3), // changes position of shadow
                     ),
                   ],
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 15),
                   child: TextFormField(
+                    controller: emailController,
                     decoration: InputDecoration(
                       icon: FaIcon(
                         FontAwesomeIcons.envelope,
@@ -117,29 +96,37 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Center(
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorApp().color_green),
-                child: SizedBox(
-                  height: 60,
-                  width: 320,
-                  child: Center(
-                    child: Text(
-                      "Send code",
-                      style: GoogleFonts.poppins(
-                        color: ColorApp().color_white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
+                child: ButtonInline(
+              size: 320,
+              text: "Send code",
+              onPress: () async {
+                await controller.forgotPassword(email: emailController.text);
+                if (controller.isLoading.value) {
+                   ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "Loalding...Please wait",
+                              ),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                } else {
+                     ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                 'Success, Reset password link sent to your email.',
+                              ),
+                              duration: Duration(seconds: 10),
+                            ),
+                          );
+                  // Success
+               
+                }
+              },
+            )),
+            const SizedBox(height: 20),
             Stack(
               children: [
                 Container(
@@ -159,27 +146,35 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 Positioned(
                   top: 290,
                   left: 60,
-                  child: RichText(
-                    text: TextSpan(
-                      style: GoogleFonts.poppins(
-                        color: ColorApp().color_black,
-                      ), // Default text style
-                      children: const <TextSpan>[
-                        TextSpan(
-                          text: 'Remember Password ?  ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()));
+                    },
+                    child: RichText(
+                      text: TextSpan(
+                        style: GoogleFonts.poppins(
+                          color: ColorApp().color_black,
+                        ), // Default text style
+                        children: const <TextSpan>[
+                          TextSpan(
+                            text: 'Remember Password ?  ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                        TextSpan(
-                          text: 'Login now',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          TextSpan(
+                            text: 'Login now',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

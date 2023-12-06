@@ -216,7 +216,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   Positioned(
-                    top: 230,
+                    top: 240,
                     left: 60,
                     child: RichText(
                       text: TextSpan(

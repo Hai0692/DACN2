@@ -11,6 +11,7 @@ import '../widgets/buttonBack.dart';
 import '../widgets/buttonInline.dart';
 import '../widgets/iconMedia.dart';
 import '../widgets/inputTextform.dart';
+import 'forgot_password_screen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -70,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
             Stack(
               children: [
                 Container(
-                  height: 350,
+                  height: 360,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -87,12 +88,21 @@ class _LoginPageState extends State<LoginPage> {
                   top: 15,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 220),
-                    child: Text(
-                      "Forgot a password",
-                      style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: ColorApp().color_green),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const ForgotPasswordPage()));
+                      },
+                      child: Text(
+                        "Forgot a password",
+                        style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: ColorApp().color_green),
+                      ),
                     ),
                   ),
                 ),
@@ -104,7 +114,6 @@ class _LoginPageState extends State<LoginPage> {
                       size: 320,
                       text: "Login",
                       onPress: () async {
-                      
                         final token = await _authenticationController.getToken(
                           email: _emailController.text.trim(),
                           password: _passwordController.text.trim(),
@@ -116,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                             email: _emailController.text.trim(),
                             password: _passwordController.text.trim(),
                           );
-                      
+
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text(
@@ -130,27 +139,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   );
                 }),
-
-                // Positioned(
-                //   top: 60,
-                //   left: 25,
-                //   child: ButtonInline(
-                //     size: 320,
-                //     text: "Login",
-                //     onPress: () async {
-                //       final token = await _authenticationController.getToken(
-                //           email: _emailController.text.trim(),
-                //           password: _passwordController.text.trim());
-                //       if (token != null) {
-                //         //     auth.loginSuccess();
-                //         Navigator.of(context).push(
-                //           MaterialPageRoute(
-                //               builder: (context) => const HomePage()),
-                //         );
-                //       }
-                //     },
-                //   ),
-                // ),
                 Positioned(
                   top: 160,
                   left: 32,
@@ -188,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 30),
                 Positioned(
-                  top: 310,
+                  top: 320,
                   left: 50,
                   child: RichText(
                     text: TextSpan(

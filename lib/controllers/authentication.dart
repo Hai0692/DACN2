@@ -154,7 +154,7 @@ class Authentication extends GetxController {
     }
   }
 
-  Future<void> updateUser1({
+  Future<void> updateUser({
     required String token,
     required String name,
     String? email,
@@ -205,6 +205,37 @@ class Authentication extends GetxController {
       }
     } catch (e) {
       print('Error parsing response: $e');
+    }
+  }
+  
+  Future<void> forgotPassword({
+    required String email,
+  }) async {
+    try {
+      isLoading.value = true;
+      var data = {
+        'email': email,
+      };
+      var response = await http.post(
+        Uri.parse('${url}password/email'),
+        headers: {
+          'Accept': 'application/json',
+        },
+        body: data,
+      );
+      if (response.statusCode == 200) {
+        isLoading.value = false;
+        var result = jsonDecode(response.body);
+        print(" success: $result");
+      } else {
+        isLoading.value = false;
+        print("HTTP Request Failed with status code: ${response.statusCode}");
+      }
+    
+    } catch (e) {
+      isLoading.value = false;
+      print(e.toString());
+      rethrow;
     }
   }
 }
