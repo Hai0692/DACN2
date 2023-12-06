@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../commons/color_common.dart';
+import '../controllers/jobCotroller.dart';
 import '../models/business.dart';
 import '../widgets/background.dart';
 import '../widgets/buttonBack.dart';
@@ -22,40 +23,25 @@ class AllBusiness extends StatefulWidget {
 }
 
 class _AllBusinessState extends State<AllBusiness> {
-  late List<Business> _business;
-  bool _isLoading = true;
+  BusinessController businessController = Get.put(BusinessController());
 
-  @override
+   final JobController testController = Get.put(JobController());
+  Future<void> getDataBusiness() async {
+    try {
+      businessController.result.value =
+          await businessController.getAllBusiness();
+    } catch (e) {
+      print("$e");
+    }
+  }
+   @override
   void initState() {
     super.initState();
-    _business = [];
     getDataBusiness();
   }
 
-  Future<void> getDataBusiness() async {
-    _business = await BusinessController.getBusinessTest();
-    setState(() {
-      _isLoading = false;
-    });
-  }
 
-   final BusinessController _businessController = Get.put(BusinessController());
-
-  // var AllBusiness;
-  // Future<void> getData() async {
-  //   var responseAllBusiness = await BusinessController().getBusiness();
-  //   if (responseAllBusiness != null) {
-  //     setState(() {
-  //       AllBusiness = json.decode(responseAllBusiness);
-  //     });
-  //   }
-  // }
-
-  // @override
-  // void initState() {
-  //   getData();
-  //   super.initState();
-  // }
+  final BusinessController _businessController = Get.put(BusinessController());
 
   @override
   Widget build(BuildContext context) {
@@ -63,86 +49,72 @@ class _AllBusinessState extends State<AllBusiness> {
         body: Stack(children: [
           const Background(),
           Positioned(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  const Button_Back(),
-                  Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        "All Business",
-                        style: GoogleFonts.poppins(
-                            color: ColorApp().color_black,
-                            fontSize: 25,
-                            fontWeight: FontWeight.w600),
-                      )),
-                  const SizedBox(height: 10),
-                  const Center(child: Search_Form()),
-                  Column(
-                    children: [
-                   if (AllBusiness == null)
-                        ...{}
-                      else ...{
-
-                                  for (int i = 0; i <_business.length ; i++) ...{
-                          businessDetails(
-                            avatar:   _business[i].avatar,
-                            name:  _business[i].name,
-                            location: _business[i].location, 
-                            career: _business[i].career, 
-                            email: _business[i].email, 
-                            phone: _business[i].phone, 
-                            size: _business[i].size, 
-                                    onPress: () async {
-                              final detailBusinessResponse =
-                                  await _businessController.BusinessDetails(
-                                      _business[i].id);
-                              var businessDetails =
-                                  jsonDecode(detailBusinessResponse);
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => DetailBusiness(
-                                          data: businessDetails)));
-                            },
-                          )
-                        }
-                        //AllBusiness.length
-                        // for (int i = 0; i <AllBusiness.length ; i++) ...{
-                        //   businessDetails(
-                        //     avatar: AllBusiness[i]["avatar"].toString(),
-                        //     name: AllBusiness[i]["name"].toString(),
-                        //     location: AllBusiness[i]["location"].toString(),
-                        //     career: AllBusiness[i]["career"].toString(),
-                        //     email: AllBusiness[i]["email"].toString(),
-                        //     phone: AllBusiness[i]["phone"].toString(),
-                        //     size: AllBusiness[i]["size"],
-                        //     onPress: () async {
-                        //       final detailBusinessResponse =
-                        //           await _businessController.BusinessDetails(
-                        //               AllBusiness[i]["id"]);
-                        //       var businessDetails =
-                        //           jsonDecode(detailBusinessResponse);
-                        //       Navigator.push(
-                        //           context,
-                        //           MaterialPageRoute(
-                        //               builder: (context) => DetailBusiness(
-                        //                   data: businessDetails)));
-                        //     },
-                        //   )
-                        // }
-                      }
-                    ],
-                  )
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
+                  child: Button_Back(),
+                ),
+                Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      "All Business",
+                      style: GoogleFonts.poppins(
+                          color: ColorApp().color_black,
+                          fontSize: 25,
+                          fontWeight: FontWeight.w600),
+                    )),
+                const SizedBox(height: 10),
+                const Center(child: Search_Form()),
+            Expanded(child: _buildResultAllBusiness()),
 //
-                ],
-              ),
+              ],
             ),
           )
         ]),
         bottomNavigationBar: const Custome_Bottom());
+  }
+
+    Widget _buildResultAllBusiness() {
+    return Obx(
+      () {
+        var result = businessController.result.value;
+        if (result.isEmpty) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          return ListView.builder(
+            itemCount: result.length,
+            itemBuilder: (context, index) {
+              BusinessTest business = result[index];
+              return businessDetails(
+                id: business.id,
+                avatar: business.avatar,
+          career: business.career,
+          email: business.email,
+          name: business.name,
+          phone: business.phone,
+          size: business.size,
+                location: business.location,
+              
+                   onPress: () async {
+                    BusinessTest businessDetails = await businessController.getBusinessDetails(business.id);
+              
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailBusiness(data: businessDetails),
+                  ),
+                );
+              },
+              );
+            },
+          );
+        }
+      },
+    );
   }
 }

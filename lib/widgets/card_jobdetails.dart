@@ -19,10 +19,10 @@ class detailJob extends StatelessWidget {
   final String avatar;
   final VoidCallback onPress;
   final VoidCallback? onPressFavorite;
- 
+
   const detailJob({
     super.key,
-   required this.id,
+    required this.id,
     required this.position,
     required this.company,
     required this.level,
@@ -33,7 +33,6 @@ class detailJob extends StatelessWidget {
     required this.avatar,
     required this.onPress,
     this.onPressFavorite,
-   
   });
 
   @override
@@ -45,7 +44,7 @@ class detailJob extends StatelessWidget {
       child: Container(
         width: double.maxFinite,
         //  height: 170,
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -112,8 +111,9 @@ class detailJob extends StatelessWidget {
                           ),
                           IconButton(
                             icon: Icon(
-                      
-                           isInFavorites ? Icons.favorite : Icons.favorite_border_outlined,
+                              isInFavorites
+                                  ? Icons.favorite
+                                  : Icons.favorite_border_outlined,
                               color: HexColor("#F54209"),
                               size: 15,
                             ),

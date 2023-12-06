@@ -40,7 +40,8 @@ class Popular_Job extends StatelessWidget {
     return GestureDetector(
       onTap: onPress,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 10, ),
+        
         width: 250,
         // height: 140,
         decoration: BoxDecoration(

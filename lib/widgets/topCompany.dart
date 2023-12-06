@@ -25,7 +25,7 @@ class Top_Company extends StatelessWidget {
       onTap: onPress,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        margin: const EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         height: 70,
         width: 330,
         decoration: BoxDecoration(
@@ -72,7 +72,6 @@ class Top_Company extends StatelessWidget {
                 ],
               ),
             ),
-     
             Container(
               width: 60,
               height: 30,

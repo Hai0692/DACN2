@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_job_hiring/controllers/jobCotroller.dart';
+import 'package:flutter_job_hiring/models/job.dart';
 import 'package:flutter_job_hiring/widgets/buttonInline.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -8,7 +10,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 import '../commons/color_common.dart';
-import '../controllers/JobController.dart';
 import '../widgets/background.dart';
 import '../widgets/buttonBack.dart';
 import '../widgets/card_jobdetails.dart';
@@ -16,15 +17,16 @@ import '../widgets/customeBottom.dart';
 import 'Application_screen.dart';
 
 class DetailJob extends StatefulWidget {
-  final data;
-  const DetailJob({super.key, this.data});
+  final JobTest data;
+  const DetailJob({super.key, required this.data});
 
   @override
   State<DetailJob> createState() => _DetailJobState();
 }
 
 class _DetailJobState extends State<DetailJob> {
-  final JobController _jobController = Get.put(JobController());
+  final JobController testController = Get.put(JobController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,21 +55,15 @@ class _DetailJobState extends State<DetailJob> {
 //
                   detailJob(
                     onPress: () {},
-                      id: widget.data["id"],
-                    avatar: widget.data["business"]["avatar"].toString(),
-                    company: widget.data["business"]["name"].toString(),
-                    position: widget.data["position"].toString(),
-                    level: widget.data["level"] is List
-                        ? widget.data["level"].join(", ")
-                        : widget.data["level"].toString(),
-                    skill: widget.data["skill"] is List
-                        ? widget.data["skill"].join(", ")
-                        : widget.data["skill"].toString(),
-                    type: widget.data["type"] is List
-                        ? widget.data["type"].join(", ")
-                        : widget.data["type"].toString(),
-                    salary: widget.data["salary"].toString(),
-                    location: widget.data["business"]["location"].toString(),
+                    id: widget.data.id,
+                    avatar: widget.data.business.avatar,
+                    company: widget.data.business.name,
+                    level: widget.data.level.join(','),
+                    location: widget.data.business.location,
+                    position: widget.data.position,
+                    salary: widget.data.salary,
+                    skill: widget.data.skill.join(','),
+                    type: widget.data.type.join(','),
                   ),
 
                   Container(
@@ -108,7 +104,7 @@ class _DetailJobState extends State<DetailJob> {
                             Text(
                               maxLines: 4,
                               overflow: TextOverflow.ellipsis,
-                              "${widget.data["content"]}",
+                              widget.data.content,
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                               ),
@@ -155,7 +151,7 @@ class _DetailJobState extends State<DetailJob> {
                             Text(
                               maxLines: 4,
                               overflow: TextOverflow.ellipsis,
-                              "${widget.data["requirement"]}",
+                              widget.data.requirement,
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                               ),
@@ -202,7 +198,7 @@ class _DetailJobState extends State<DetailJob> {
                             Text(
                               maxLines: 4,
                               overflow: TextOverflow.ellipsis,
-                              "${widget.data["benefits"]}",
+                              widget.data.benefits,
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                               ),
@@ -215,15 +211,13 @@ class _DetailJobState extends State<DetailJob> {
                       child: ButtonInline(
                           text: "Apply now",
                           onPress: () async {
-                            var businessDetailResponse = await _jobController
-                                .jobDetails(widget.data["id"]);
-                            var businessDetails =
-                                jsonDecode(businessDetailResponse);
+                            JobTest jobDetails =
+                      await testController.getDetailJob(widget.data.id);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    ApplicationPage(data: businessDetails),
+                                    ApplicationPage(data: jobDetails),
                               ),
                             );
                           },

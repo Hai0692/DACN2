@@ -1,8 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_job_hiring/controllers/JobController.dart';
+import 'package:flutter_job_hiring/controllers/jobCotroller.dart';
+import 'package:flutter_job_hiring/models/job.dart';
+import 'package:flutter_job_hiring/providers/favorite_provider.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../controllers/favoriteController.dart';
 import '../controllers/searchController.dart';
 import '../widgets/background.dart';
 import '../widgets/buttonBack.dart';
@@ -11,14 +16,36 @@ import '../widgets/card_jobdetails.dart';
 import '../widgets/customeBottom.dart';
 import 'detailJob_screen.dart';
 
-class SearchPage extends StatelessWidget {
-  final SearchController searchController = Get.put(SearchController());
-  final JobController jobController = Get.put(JobController());
+class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+  @override
+  State<SearchPage> createState() => _SearchPageState();
+}
 
-  SearchPage({super.key});
+class _SearchPageState extends State<SearchPage> {
+  final SearchController searchController = Get.put(SearchController());
+  final JobController testController = Get.put(JobController());
+  final FavoriteController favoriteController = Get.put(FavoriteController());
+  late String userToken;
+  Future<void> getData() async {
+    try {
+      final SharedPreferences pref = await SharedPreferences.getInstance();
+      var token = pref.getString("token");
+      userToken = token ?? "";
+    } catch (e) {
+      print("$e");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
 
   @override
   Widget build(BuildContext context) {
+    var favoriteProvider = Provider.of<FavoriteProvider>(context);
     return Scaffold(
         body: Stack(children: [
           const Background(),
@@ -46,7 +73,8 @@ class SearchPage extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: _buildSearchResultsList(),
+                  child: _buildSearchResultsList(
+                      searchController, testController, favoriteProvider),
                 ),
               ],
             ),
@@ -65,7 +93,8 @@ class SearchPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchResultsList() {
+  Widget _buildSearchResultsList(SearchController searchController,
+      JobController testController, FavoriteProvider favoriteProvider) {
     return Obx(() {
       var searchResults = searchController.searchResults.value;
       if (searchResults.isEmpty) {
@@ -82,31 +111,71 @@ class SearchPage extends StatelessWidget {
             return detailJob(
               //    isInFavorites: favoriteProvider.isInFavorites,
               id: job.id,
-              avatar: job.avatar,
-              company: job.name,
-              level: job.level,
-              location: job.location,
+              avatar: job.business.avatar,
+              company: job.business.name,
+              level: job.level.join(','),
+              location: job.business.location,
               position: job.position,
               salary: job.salary,
-              skill: job.skill,
-              type: job.type,
+              skill: job.skill.join(','),
+              type: job.type.join(','),
               onPress: () async {
-                final response = await jobController.jobDetails(job.id);
-                final result = jsonDecode(response);
+                JobTest response = await testController.getDetailJob(job.id);
+
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => DetailJob(data: result)));
+                        builder: (context) => DetailJob(data: response)));
+              },
+              onPressFavorite: () {
+                Favorite(favoriteProvider, job);
               },
             );
-            // return ListTile(
-            //   title: Text(job.position),
-            //   subtitle: Text(job.name),
-            //   // Add more details as needed
-            // );
           },
         );
       }
     });
+  }
+
+  Future<void> Favorite(FavoriteProvider favoriteProvider, JobTest job) async {
+    if (userToken.isNotEmpty) {
+      bool isAlreadyInFavorites = favoriteProvider.isInFavorites(job.id);
+      try {
+        favoriteProvider.setInFavorites(job.id, !isAlreadyInFavorites);
+        bool actionResult = await favoriteController
+            .manageFavorite(userToken, job.id, isAdd: !isAlreadyInFavorites);
+        if (actionResult) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+            isAlreadyInFavorites
+                ? 'Job removed from favorites'
+                : 'Job added to favorites',
+          )));
+        } else {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to update favorites'),
+            ),
+          );
+        }
+      } catch (e) {
+        print("Error: $e");
+        favoriteProvider.setInFavorites(job.id, isAlreadyInFavorites);
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('An error occurred. Please try again.'),
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+        'Please login',
+      )));
+    }
   }
 }

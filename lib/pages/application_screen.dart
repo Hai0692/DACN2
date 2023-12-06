@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_job_hiring/controllers/applycationController.dart';
+import 'package:flutter_job_hiring/models/job.dart';
 import 'package:flutter_job_hiring/widgets/background.dart';
 import 'package:flutter_job_hiring/widgets/buttonBack.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,8 +18,8 @@ import '../widgets/buttonInline.dart';
 import '../widgets/customeBottom.dart';
 
 class ApplicationPage extends StatefulWidget {
-  final data;
-  const ApplicationPage({super.key, this.data});
+  final JobTest data;
+  const ApplicationPage({super.key,required this.data});
 
   @override
   State<ApplicationPage> createState() => _ApplicationPageState();
@@ -389,7 +390,7 @@ class _ApplicationPageState extends State<ApplicationPage> {
     try {
       await _applycationController.applyForJob(
           context: context,
-        idJob: widget.data["id"],
+        idJob: widget.data.id,
         name: _nameController.text.toString(),
         phone: _phoneController.text.toString(),
         coverLetter: _coverLetterController.text.toString(),

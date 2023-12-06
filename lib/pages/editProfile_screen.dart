@@ -351,7 +351,7 @@ class _Edit_ProfileState extends State<Edit_Profile> {
         if (_pickerFile != null) {
           avatarFile = File(_pickerFile!.path);
         }
-        await _authentication.updateUser1(
+        await _authentication.updateUser(
           token: tokenUser,
           email: _emailController.text.toString(),
           address: _addressController.text.toString(),

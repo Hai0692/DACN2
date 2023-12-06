@@ -1,4 +1,5 @@
-class Business {
+
+class BusinessTest {
   final int id;
   final String name;
   final String avatar;
@@ -8,19 +9,19 @@ class Business {
   final String career;
   final int size;
 
-  Business({
-    required this.id,
-    required this.name,
-    required this.avatar,
-    required this.email,
+  BusinessTest({
     required this.phone,
     required this.location,
     required this.career,
     required this.size,
+    required this.id,
+    required this.name,
+    required this.avatar,
+    required this.email,
   });
 
-  factory Business.fromJson(dynamic json) {
-    return Business(
+  factory BusinessTest.fromJson(Map<String, dynamic> json) {
+    return BusinessTest(
       id: json['id'] as int,
       name: json['name'] as String,
       avatar: json['avatar'] as String,
@@ -30,10 +31,5 @@ class Business {
       career: json['career'] as String,
       size: json['size'] as int,
     );
-  }
-
-  @override
-  String toString() {
-    return 'Business {id: $id, name: $name, avatar: $avatar, email: $email, phone: $phone, location: $location, career : $career, size: $size}';
   }
 }
